@@ -449,7 +449,7 @@ SUBROUTINE opt_int_enetsvm (lmin, lmax, nobs, bt, ka, bb, y, lam1, lam2, &
   IMPLICIT NONE
   INTEGER :: nobs
   DOUBLE PRECISION :: lmin, lmax, lhat, objval, ka (nobs), bb, y (nobs), lam1
-  DOUBLE PRECISION :: a, b, d, e, p, q, r, u, v, w, x, del, bt, lam2
+  DOUBLE PRECISION :: a, b, d, e, p, q, r, u, v, w, x, bt, lam2
   DOUBLE PRECISION :: t2, fu, fv, fw, fx, xm, tol, tol1, tol3
   REAL(KIND = SELECTED_REAL_KIND(10, 99)) :: eps
   DOUBLE PRECISION, PARAMETER :: gold = (3.0D0 - Sqrt(5.0D0)) * 0.5D0

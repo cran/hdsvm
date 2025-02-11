@@ -1,6 +1,6 @@
 #' Cross-validation for Selecting the Tuning Parameter in the Penalized SVM
 #'
-#' Performs k-fold cross-validation for \code{\link{hdsvm}}, similar to \code{\link[glmnet]{cv.glmnet}}.
+#' Performs k-fold cross-validation for \code{\link{hdsvm}}.
 #'
 #' @param x A numerical matrix with \eqn{n} rows (observations) and \eqn{p} columns (variables).
 #' @param y Response variable.

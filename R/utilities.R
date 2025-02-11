@@ -109,7 +109,7 @@ err_pmax = function(n, maxit, pmax) {
     if (n == 10000) 
       msg = "All penalty factors are <= 0"
     n = 1
-    msg = paste("in dcsvm fortran code -", msg)
+    msg = paste("in hdsvm fortran code -", msg)
   }
   if (n < 0) {
     if (n > -10000) 
@@ -119,7 +119,7 @@ err_pmax = function(n, maxit, pmax) {
       msg = paste0("Number of nonzero coefficients along the path exceeds pmax=", 
           pmax, " at ", -n - 10000, "th lambda value; solutions for larger lambdas returned")
     n = -1
-    msg = paste("from dcsvm fortran code -", msg)
+    msg = paste("from hdsvm fortran code -", msg)
   }
   list(n = n, msg = msg)
 }

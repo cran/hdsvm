@@ -1,12 +1,12 @@
 ! --------------------------------------------------------------------------
-! dcsvm_unif.f90: the algorithm for the sparse SVM using uniform kernel convolution. 
+! hdsvm_cd.f90: the algorithm for the sparse SVM using uniform kernel convolution. 
 ! --------------------------------------------------------------------------
 !
 ! USAGE:
 ! 
-! call dcsvm_unif (alpha, lam2, hval, nobs, nvars, x, y, jd, pfncol, pf, & 
-! & pf2, dfmax, pmax, nlam, flmin, ulam, eps, isd, maxit, istrong, nalam, & 
-! & b0, beta, ibeta, nbeta, alam, npass, jerr, istrong) 
+! call hdsvm_cd (alpha, lam2, hval, nobs, nvars, x, y, jd, 
+!      pfncol, pf, pf2, dfmax, pmax, nlam, flmin, ulam, eps, isd, maxit,
+!      nalam, b0, beta, ibeta, nbeta, alam, npass, jerr, sigma, is_exact) 
 !
 ! INPUT ARGUMENTS:
 ! 
@@ -133,7 +133,7 @@
             b0(l) = b0(l) - Dot_product (beta(1:nk, l), &
            & xmean(ibeta(1:nk)))
          ENDDO
-         RETURN
+
       END SUBROUTINE hdsvm_cd
 
       SUBROUTINE hdsvm_cd_path (alpha, lam2, hval, maj, mval, nobs, nvars, &
@@ -147,7 +147,7 @@
          DOUBLE PRECISION, PARAMETER :: MFL = 1.0E-6
          DOUBLE PRECISION, PARAMETER :: Pi = 3.141592654
          INTEGER, PARAMETER :: MNLAM = 6
-         INTEGER :: nobs, nvars, dfmax, pmax, nlam, ndel
+         INTEGER :: nobs, nvars, dfmax, pmax, nlam
          INTEGER :: pfncol, maxit, nalam, npass(nlam), jerr 
          INTEGER :: ju (nvars), m (pmax), nbeta (nlam), is_exact
          DOUBLE PRECISION :: alpha, lam2, hval, flmin, eps
@@ -155,25 +155,27 @@
          DOUBLE PRECISION :: pf (nvars, pfncol), pf2 (nvars), ulam (nlam)
          DOUBLE PRECISION :: beta (pmax, nlam), b0 (nlam)
          DOUBLE PRECISION :: alam (nlam), maj (nvars), mval
-         DOUBLE PRECISION :: KKTeps, projeps, hvaleps
 !------- local declarations -------------------------------------
          DOUBLE PRECISION :: d, dif, oldb, u, v, al, alf, hinv
          DOUBLE PRECISION :: dl (nobs), r (nobs), onemh, oneph
          DOUBLE PRECISION :: b (0:nvars), oldbeta (0:nvars)
-         INTEGER :: i, k, j, l, ctr, ni, me, mnl, mm (nvars), pfl
+         INTEGER :: i, k, j, l, ni, me, mnl, mm (nvars), pfl
 !------- local declarations for the projection -----------------
-         ! INTEGER, PARAMETER :: hval_len 
-         INTEGER :: jx, hval_id, tt, hval_len, mproj = 2, mp
-         DOUBLE PRECISION :: ga (nvars), vl (nvars), al0, maj0(nvars), ab
-         DOUBLE PRECISION :: ka(nobs), bb, obj1, obj0, b00, dif0
+         INTEGER :: hval_id, hval_len=4, mproj = 2, mp
+         DOUBLE PRECISION :: ga (nvars), vl (nvars), al0, maj0(nvars)
+         DOUBLE PRECISION :: ka(nobs), bb, obj1, obj0, b00, dif0, hvaleps
          INTEGER :: eset(nvars), sset(nobs), si, ss (nobs)
          DOUBLE PRECISION :: xb, xk2, mb, mb0, theta(nobs), delta
-         DOUBLE PRECISION :: yt(nobs), quantile, d_kkt, dif_kkt
-         DOUBLE PRECISION :: sx(nvars), uo, obj
-         DOUBLE PRECISION :: intercept
+         DOUBLE PRECISION :: intercept, d_kkt, dif_kkt
+         DOUBLE PRECISION :: sx(nvars), uo, ab, KKTeps, projeps
 !------- some initial setup ------------------------------------- 
          al = 0.0D0
-         r = 0.0D0
+         al0 = 0.0D0
+         sx = 0.0D0
+         oldb = 0.0D0
+         dl = 0.0D0
+         r = y
+         d = 0.0D0
          b = 0.0D0
          oldbeta = 0.0D0
          m = 0
@@ -189,7 +191,6 @@
          mb0 = 0.0D0
          xk2 = 0.0D0
          delta = hval
-         hval_len = ndel
          theta =0.0D0
          obj0 = 0.0D0
          obj1 = 0.0D0
@@ -197,8 +198,11 @@
          ka = 0.0D0
          bb = 0.0D0
          ab = 0.0D0
+         dif0 = 0.0D0
+         KKTeps = 1e-3   
          ss = 0
-
+         projeps = nobs * eps
+         hvaleps = 1e-6
 !---------- lambda loop -----------------------------------------
          mnl = Min (MNLAM, nlam)
          IF (flmin < 1.0D0) THEN
@@ -442,7 +446,7 @@
                d_kkt = 0.0D0
                dif_kkt= 0.0D0
                CALL svm_drv (nobs, nvars, x, y, r, vl, 1/1.0D-12, 1 - 1.0D-12, 1 + 1.0D-12)
-               DO j = 1, nobs
+               DO j = 1, nvars
                   IF (Abs(b(j)) > 0) THEN
                      u = vl(j) + lam2 * pf2(j) * b(j)
                      v = Abs(u) - al * pf(j, pfl)
@@ -454,7 +458,7 @@
                   IF (d_kkt /= 0.0D0) dif_kkt = Max(dif_kkt, d_kkt * d_kkt)
                ENDDO
 
-               uo = Max(ulam(l), 1.0D0)
+               uo = Max(al, 1.0D0)
                IF (dif_kkt * dif_kkt/ uo / uo < KKTeps) THEN
                  IF (dif * dif < hvaleps) EXIT
                ENDIF 
@@ -692,7 +696,7 @@
             me = Count (beta(1:ni, l) /= 0.0D0)
             IF (me > dfmax) EXIT
          ENDDO loop_lambda
-         RETURN
+
       END SUBROUTINE hdsvm_cd_path
       
       SUBROUTINE svm_drv (nobs, nvars, x, y, r, vl, hinv, onemh, oneph)

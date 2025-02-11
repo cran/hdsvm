@@ -42,8 +42,8 @@ prob <- plogis(c(x \%*\% beta))
 y <- 2 * rbinom(n, 1, prob) - 1
 lam2 <- 0.01
 lambda <- 10^(seq(1,-4, length.out = 30)) 
-nc.fit <- nc.hdsvm(x = x, y = y, lambda = lambda, lam2 = lam2, pen = "scad")
-nc.preds <- predict(nc.fit, newx = tail(x), s = nc.fit$lambda[3:5])
+\donttest{nc.fit <- nc.hdsvm(x = x, y = y, lambda = lambda, lam2 = lam2, pen = "scad")}
+\donttest{nc.preds <- predict(nc.fit, newx = tail(x), s = nc.fit$lambda[3:5])}
 }
 \seealso{
 \code{\link{nc.hdsvm}}, \code{\link{coef.nc.hdsvm}}

@@ -36,7 +36,7 @@ An object with S3 class \code{cv.hdsvm} consisting of
   \item{nzero}{Number of non-zero coefficients at each \code{lambda}.}
 }
 \description{
-Performs k-fold cross-validation for \code{\link{hdsvm}}, similar to \code{\link[glmnet]{cv.glmnet}}.
+Performs k-fold cross-validation for \code{\link{hdsvm}}.
 }
 \details{
 This function computes the average cross-validation error and provides the standard error.

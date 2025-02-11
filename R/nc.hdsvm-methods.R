@@ -33,8 +33,8 @@
 #' y <- 2 * rbinom(n, 1, prob) - 1
 #' lam2 <- 0.01
 #' lambda <- 10^(seq(1,-4, length.out = 30)) 
-#' nc.fit <- nc.hdsvm(x = x, y = y, lambda = lambda, lam2 = lam2, pen = "scad")
-#' nc.coefs <- coef(nc.fit, s = nc.fit$lambda[3:5])
+#' \donttest{nc.fit <- nc.hdsvm(x = x, y = y, lambda = lambda, lam2 = lam2, pen = "scad")}
+#' \donttest{nc.coefs <- coef(nc.fit, s = nc.fit$lambda[3:5])}
 
 coef.nc.hdsvm <- function(object, s=NULL, 
     type=c("coefficients", "nonzero"), ...) {
@@ -92,8 +92,8 @@ coef.nc.hdsvm <- function(object, s=NULL,
 #' y <- 2 * rbinom(n, 1, prob) - 1
 #' lam2 <- 0.01
 #' lambda <- 10^(seq(1,-4, length.out = 30)) 
-#' nc.fit <- nc.hdsvm(x = x, y = y, lambda = lambda, lam2 = lam2, pen = "scad")
-#' nc.preds <- predict(nc.fit, newx = tail(x), s = nc.fit$lambda[3:5])
+#' \donttest{nc.fit <- nc.hdsvm(x = x, y = y, lambda = lambda, lam2 = lam2, pen = "scad")}
+#' \donttest{nc.preds <- predict(nc.fit, newx = tail(x), s = nc.fit$lambda[3:5])}
 
 predict.nc.hdsvm <- function(object, newx, s=NULL, type=c("class", "loss"),...) {
   type <- match.arg(type)
